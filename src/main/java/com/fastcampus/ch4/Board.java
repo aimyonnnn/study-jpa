@@ -10,7 +10,7 @@ public class Board {
 //    @GeneratedValue // 자동 번호 증가
     private Long bno; // 게시물 번호
     private String title;
-    private String wirter;
+    private String writer;
     private String content;
     private Long viewCnt;
     @Temporal(value = TemporalType.TIMESTAMP)
@@ -23,7 +23,7 @@ public class Board {
         return "Board{" +
                 "bno=" + bno +
                 ", title='" + title + '\'' +
-                ", wirter='" + wirter + '\'' +
+                ", writer='" + writer + '\'' +
                 ", content='" + content + '\'' +
                 ", viewCnt=" + viewCnt +
                 ", inDate=" + inDate +
@@ -47,12 +47,12 @@ public class Board {
         this.title = title;
     }
 
-    public String getWirter() {
-        return wirter;
+    public String getWriter() {
+        return writer;
     }
 
     public void setWirter(String wirter) {
-        this.wirter = wirter;
+        this.writer = wirter;
     }
 
     public String getContent() {
