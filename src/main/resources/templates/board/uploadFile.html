@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>File Upload</title>
+<style>
+    a { text-decoration: none; }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+let fileList = [];
+
+// 파일목록 삭제 함수
+function deleteFile(filename){
+    $.ajax({
+        url:'/board/deleteFile',
+        data:{ filename : filename },
+        dataType:'text',
+        type: 'post',
+        success: result =>{
+            alert(result);
+
+            // 파일 목록에서 삭제된 파일을 제거
+            fileList = fileList.filter(file => file != filename ) // 해당 파일을 제외한 파일만 남긴다.
+            showFileList();
+        }
+    })
+}
+
+// 파일목록 조회 함수
+function showFileList(){
+    console.log('22222');
+    let tmp = ``; // 따옴표 아니고 빽틱
+    for(file of fileList){
+        tmp += `<li><a href="/board/download?filename=${file}">${file}</a>
+            <button id="deleteBtn" onclick="deleteFile('${file}')">삭제</button>
+        </li>`;
+    }
+    $('#fileList ul').html(tmp);
+}
+
+$(document).ready(function(){
+
+    $('#uploadBtn').on('click',function(){
+
+        // 복사본을 만든 뒤에 복사본으로 덮어씌움
+        let copy = $('#uploadDiv').clone();
+
+        var formData = new FormData(); // 폼태그 대신 사용
+        var inputFile = $('input[name=files]');
+        var files = inputFile[0].files;
+
+        for(i=0; i<files.length; i++){
+            formData.append("files", files[i]);
+        }
+
+        $.ajax({
+            url:'/board/uploadAjax',
+            processData: false,
+            contentType: false,
+            data: formData,
+            type: 'post',
+            success: function(result){
+                console.log(result);
+                // 1. uploadDiv를 초기화
+                // $('#uploadDiv').empty(); => 파일선택 버튼이 사라져버림
+                $('#uploadDiv').html(copy.html());
+
+                // 2. 파일 목록을 fileList에 추가
+                // fileList = fileList.concat(result); // 두 배열을 합쳐서 넣음
+                fileList = [...fileList, ...result];
+                console.log(fileList);
+                showFileList();
+            }
+        }); // ajax
+    }); // click
+}); // ready
+</script>
+</head>
+<body>
+<!--
+1. 크롬 콘솔창에 id만 입력하면 uploadForm을 입력하면 해당 id에 대한 내용이 나옴
+2. uploadForm.file 입력 시 input 태그 나옴
+3. dir(uploadForm.file) 입력 시 업로드한 파일명들 확인할 수 있음
+4. multiple 지정시 여러파일 업로드 가능
+-->
+<h2>파일 업로드</h2>
+<!--<form id="uploadForm" action="/board/uploadFile" method="post" enctype="multipart/form-data">-->
+<!--</form>-->
+<div id="uploadDiv">
+    <input type="file" id="file" name="files" multiple/>
+</div>
+<br><br>
+<button id="uploadBtn">Upload File</button>
+
+<div id="fileList">
+    <ul>
+
+    </ul>
+</div>
+
+</body>
+</html>
